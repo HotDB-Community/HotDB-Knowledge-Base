@@ -88,7 +88,7 @@ Note: The TPS mentioned above is simple TPS. The above performance indicators ar
 
 - Strong consistent distributed transactions are transparent to the application. No SQL commands or transaction processes need to be changed when users operate. They can be used like ordinary transactions.
 
-- The read-write splitting is transparent to the application. Users do not need to care about the location of distributed SQL. The application program automatically routes the SQL according to the configured read-write splitting strategy.
+- The read-write splitting is transparent to the application. Users do not need to care about the location of distributed SQL. The application program automatically routes the SQL according to the configured read-write splitting strategy.
 
 - The global auto-incremental sequence is transparent to the application. Users can use the HotDB Server global auto incremental sequence just like MySQL auto incremental sequence.
 
@@ -196,7 +196,7 @@ HotDB Server supports general data definition operation statements, such as CREA
 
 ##### Cross-node SQL
 
-HotDB Server supports cross-node SQL operations, such as:
+HotDB Server supports cross-node SQL operations, such as:
 
 - Cross-node INNER/LEFT/RIGHT JOIN
 
@@ -214,11 +214,11 @@ HotDB Server allows to update the sharding key value of the sharding table witho
 
 ##### Transparent global auto-incremental sequence
 
-Under the distributed architecture, HotDB Server can ensure the global auto-increment of the columns with AUTO_INCREMENT attribute on each data node. The use of transparent global auto-incremental sequence is the same as that of MySQL AUTO_INCREMENT. At present, transparent global auto-incremental sequence can ensure the global orderly increment of this field, but does not guarantee the continuity of the sequence value.
+Under the distributed architecture, HotDB Server can ensure the global auto-increment of the columns with AUTO_INCREMENT attribute on each data node. The use of transparent global auto-incremental sequence is the same as that of MySQL AUTO_INCREMENT. At present, transparent global auto-incremental sequence can ensure the global orderly increment of this field, but does not guarantee the continuity of the sequence value.
 
 ##### Global unique constraint
 
-HotDB Server supports global unique constraints, which can ensure that columns with unique constraints (UNIQUE、PRIMARY KEY) are global unique on all data nodes when this function is enabled. If the related functions are enabled, it can also locate a single node when the SELECT query statement does not contain sharding keys but contains unique constraint fields. Currently, it supports setting global unique constraints to the table level.
+HotDB Server supports global unique constraints, which can ensure that columns with unique constraints (UNIQUE、PRIMARY KEY) are global unique on all data nodes when this function is enabled. If the related functions are enabled, it can also locate a single node when the SELECT query statement does not contain sharding keys but contains unique constraint fields. Currently, it supports setting global unique constraints to the table level.
 
 ### PARTITION
 

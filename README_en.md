@@ -1,9 +1,11 @@
 # HotDB-Knowledge-Base
 
-[中文](README.md) | [English](README_en.md) | [Github](https://github.com/HotDB-Community/HotDB-Knowledge-Base) | [Official Website](https://www.hotdb.com)
+[中文](README.md) | [English](README_en.md) 
 
 Reference Manual of HotDB Server, a distributed relational database.
 
-[中文手册](中文手册)
+[Github](https://github.com/HotDB-Community/HotDB-Knowledge-Base) | [官方网站](https://www.hotdb.com)
 
-[English Manual](English%20Manual)
+[中文文档](中文手册) | [English Documents](English%20Manual)
+
+[中文参考手册](https://hotdb-community.github.io/hotDB-knowledge-base/#/) | [English Reference Manual](https://hotdb-community.github.io/hotDB-knowledge-base/#/en/)

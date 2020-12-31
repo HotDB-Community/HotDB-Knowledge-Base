@@ -16,7 +16,7 @@ DRDS(Distributed Relational Database Service)即分布式关系型数据库服�
 
 HotDB Server是一款专注MySQL数据库服务的高可靠、高吞吐和强一致的分布式事务数据库产品。支持在分布式环境下为应用提供类似集中式数据库的操作体验，为海量数据、海量用户、高并发、高可用和高性能的业务系统提供强有力的支撑。同时具备强透明、易扩展、无学习成本等特点。HotDB Server的数据服务端口可以像MySQL数据库一样访问，应用程序连接HotDB Server的数据服务端口与连接MySQL的方式一致。从MySQL替换为HotDB Server只需修改应用的数据库配置文件中host、port、database、user、password信息即可。同时支持不同开发语言的MySQL数据库驱动、连接池，例如JAVA的JDBC驱动，c3p0、DHCP、DRUID连接池。
 
-![HotDB Server 架构示意图](../assets/zh-cn/readme/image4.png)
+![HotDB Server 架构示意图](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image4.png)
 
 ## 集群组成说明
 
@@ -256,13 +256,13 @@ HotDB Server兼容MySQL的用户权限体系，支持全局权限、库权限、
 
 HotDB Server提供七种数据拆分算法，满足用户大部分场景的拆分需求。以下是七种拆分算法的具体介绍：
 
-![拆分算法](../assets/zh-cn/readme/image4.png)
+![拆分算法](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image4.png)
 
 ### 表类型
 
 HotDB Server提供四种表类型供用户选择，用户可以根据实际业务场景选择合适的数据库表类型。以下是关于四种表类型的具体介绍：
 
-![表类型](../assets/zh-cn/readme/image5.png)
+![表类型](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image5.png)
 
 ### 兼容Oracle函数与Sequence语法
 
@@ -312,37 +312,37 @@ HotDB Server在参数配置、服务监控、数据检测、安全防护、故�
 
 管理平台提供逻辑库、存储节点、配置库维度的主备数据一致性校验功能。主从数据一致性检查，可校验主库与从库之间的表结构与表数据是否一致。当检测存在少量的数据不一致时，主从数据一致性检查可定位到数据行不一致的主键值；有大量不一致时，则显示不一致的主键值区间或显示全表大量不一致的提示。此外，还可以添加定时计划，定期检测所选逻辑库中的数据一致性情况。
 
-![](../assets/zh-cn/readme/image7.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image7.png)
 
 ### 全局表数据检测
 
 管理平台提供全局表数据检测功能，可选择具体逻辑库中的全局表并检测该表在所有数据节点中数据是否一致。如存在不一致的数据，可以通过修复功能进行数据修复。此外，还可以通过添加定时检测计划，定期检测全局表数据的一致性，如检测发现异常，将在事件通知中告知用户。
 
-![](../assets/zh-cn/readme/image8.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image8.png)
 
 ### 数据分片路由正确性校验
 
 HotDB Server支持对水平分片表的历史数据的路由正确性进行校验。可检测业务数据是否按配置的分片规则正确路由，也可校验从其他分布式事务数据库系统导入至HotDB Server的分片数据是否存在路由错误的问题。
 
-![](../assets/zh-cn/readme/image9.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image9.png)
 
 ### 数据唯一约束检测
 
 HotDB Server支持对水平分片表或子表发起数据唯一约束检测。可及时发现集群中已开启唯一约束的表的历史数据是否存在不唯一的情况。对检测出违反唯一约束的表的重复数据进行可视化展示，方便用户进行修复。
 
-![](../assets/zh-cn/readme/image10.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image10.png)
 
 ### 数据分片方案推荐
 
 HotDB Server支持基于仿真压测生成的SQL日志，进行分片方案推荐计算，帮助用户通过实际业务场景找到合适的表分片字段。结合少量人工调优，例如更换合适的分片算法，最终可为用户生成适合生产环境的业务表分片方案。
 
-![](../assets/zh-cn/readme/image11.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image11.png)
 
 ### 分片方案在线变更
 
 提供对业务表的表类型、分片规则、分片字段、分片所属数据节点四个维度的在线变更支持。同时可结合智能分片方案推荐结果进行单个或批量表变更操作。支持变更业务表时设置数据复制暂停时段规避业务高峰期，减少对系统性能的影响。
 
-![](../assets/zh-cn/readme/image12.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image12.png)
 
 ### 表结构变更
 
@@ -350,31 +350,31 @@ HotDB Server支持基于仿真压测生成的SQL日志，进行分片方案推�
 
 管理平台支持执行普通DDL功能，支持对数据库表的创建与修改。同时，针对敏感操作，例如"drop、truncate"等SQL进行二次口令校验，防止误操作与恶意操作。
 
-![](../assets/zh-cn/readme/image13.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image13.png)
 
 #### 在线DDL
 
 管理平台支持执行在线DDL（OnlineDDL）功能，保证在进行表变更时，不会阻塞线上业务读写。并且所有正在执行的或执行完成的变更记录可在在线变更检测页面查看。
 
-![](../assets/zh-cn/readme/image14.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image14.png)
 
 ### SQL路由计划查看
 
 HotDB Server提供SQL路由计划查看功能。可查看被执行SQL语句的路由计划，展示SQL通过计算节点路由分析后具体下发的数据节点，为用户提供SQL下发情况预测信息。
 
-![](../assets/zh-cn/readme/image15.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image15.png)
 
 ### 配置参数校验
 
 HotDB Server支持对当前已配置的数据节点、存储节点、逻辑库、分片规则、数据库用户等信息进行一键式检测。如有异常或错误，则提示错误信息并定位到具体的错误源位置。
 
-![](../assets/zh-cn/readme/image16.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image16.png)
 
 ### 多集群服务管理
 
 管理平台支持管理多套计算节点集群。用户可在登录管理平台后在"计算节点选择"页面选择具体的集群进入管理。同时"计算节点选择"页面支持对集群内所有的计算节点实例运行状态以及配置库所有实例运行状态进行实时展示。
 
-![](../assets/zh-cn/readme/image17.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image17.png)
 
 ### 智能逻辑拓扑
 
@@ -388,15 +388,15 @@ HotDB Server支持对当前已配置的数据节点、存储节点、逻辑库�
 
 - 用户可通过拓扑图直接对具备主从或双主复制关系的数据节点进行手动高可用切换，也可以右键复制每一个存储节点的数据库连接信息。
 
-![](../assets/zh-cn/readme/image18.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image18.png)
 
-![](../assets/zh-cn/readme/image19.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image19.png)
 
 ### 智能物理拓扑
 
 物理拓扑图主要从服务器的视角展示集群组件与服务器之间的关系。同时，可查看服务器资源使用情况以及集群组件服务的运行状态。需要为服务器配置可用的SSH连接信息，否则只能查看服务器与集群组件的所属关系，无法查看服务器资源使用情况与组件程序的状态。
 
-![](../assets/zh-cn/readme/image20.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image20.png)
 
 ### 监控面板
 
@@ -404,29 +404,29 @@ HotDB Server支持对当前已配置的数据节点、存储节点、逻辑库�
 
 - 计算节点服务状态监控：客户端连接总数、计算节点线程使用情况、后端连接状态、计算节点直接内存使用率、实时数据量、计算节点堆内存使用率。
 
-![](../assets/zh-cn/readme/image21.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image21.png)
 
 - 计算节点吞吐量：网络流量监控、TPS、QPS、客户端操作速率、后端操作速率。
 
-![](../assets/zh-cn/readme/image22.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image22.png)
 
 - 计算节点服务器资源：服务器内存使用情况、服务器磁盘空间使用情况、服务器CPU负载情况、服务器CPU使用率、服务器磁盘读写情况、服务器网络流量进出情况、服务器磁盘IO带宽利用率。
 
-![](../assets/zh-cn/readme/image23.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image23.png)
 
 - 集群资源监控：包括存储节点及其他有SSH访问权限的服务器。监控项有：CPU使用率、内存使用情况、磁盘使用情况、网络进出流量。对超出配置的监控阈值的服务器进行预警、对无法连接的服务器进行故障显示。
 
-![](../assets/zh-cn/readme/image24.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image24.png)
 
 - 数据增量预测：可以根据历史数据记录，提前规划存储节点/配置库数据容量。
 
-![](../assets/zh-cn/readme/image25.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image25.png)
 
 ### JOIN关系分析
 
 管理平台基于计算节点记录的SQL日志，利用符合JOIN查询场景的SQL日志，以可视化的形式展现各业务表之间的关联关系。用户通过图形化的展示可快速定位业务中存在高频JOIN的表，以及定位因种种原因而成为跨库有交叉类型JOIN的SQL。为用户调整分片规则与优化JOIN查询SQL，提升系统性能提供可靠依据。
 
-![](../assets/zh-cn/readme/image26.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image26.png)
 
 ### 数据报表
 
@@ -434,49 +434,49 @@ HotDB Server支持对当前已配置的数据节点、存储节点、逻辑库�
 
 - 集群数据量报表：集群数据量变化趋势图、集群数据量分布图、逻辑库数据量分布图、表数据量分布图。
 
-![](../assets/zh-cn/readme/image27.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image27.png)
 
 - 计算节点吞吐量报表：计算节点吞吐量变化趋势图、计算节点吞吐类型对比图、逻辑库吞吐量对比图、表吞吐量对比图。
 
-![](../assets/zh-cn/readme/image28.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image28.png)
 
 - 数据节点吞吐量报表：数据节点吞吐总量对比图、数据节点吞吐量变化趋势、集群吞吐类型对比图、逻辑库吞吐量对比图、表吞吐量对比图。
 
-![](../assets/zh-cn/readme/image29.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image29.png)
 
 - 计算节点连接报表：总连接数、连接时长最长的连接、操作次数最多的连接、连接次数最多的连接、连接总时长占比、连接总次数占比、操作次数占比、前端应用IP连接分布图、连接用户分布图、逻辑库分布图。
 
-![](../assets/zh-cn/readme/image30.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image30.png)
 
 ### 表结构与索引检测
 
 管理平台支持按逻辑库为单位，检测逻辑库下的表，在所属数据节点中的表结构与索引定义是否一致。检测到不一致的表则在检测结果中显示出不一致的原因。此外还可以通过添加定时任务监测业务表状态，发现表结构或索引存在定义异常系统将立即在事件通知中提醒，帮助用户及时发现有问题的表。
 
-![](../assets/zh-cn/readme/image31.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image31.png)
 
 ### 审计日志
 
 管理平台支持对用户操作的审计记录，包括：管理平台基本操作、安全防护操作、管理端口命令操作等。有助于系统出现异常时，进行问题排查、分析。
 
-![](../assets/zh-cn/readme/image32.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image32.png)
 
-![](../assets/zh-cn/readme/image33.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image33.png)
 
-![](../assets/zh-cn/readme/image34.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image34.png)
 
 ### 操作日志智能分析
 
 管理平台提供统计select、insert、update、delete、事务开启、提交、回滚等SQL语句执行耗时及执行次数详情的操作日志智能分析功能。通过内部算法自动分析出需要优化的SQL语句，并通过待优化标志以及SQL优化建议辅助用户对业务SQL进行调优。用户也可以自主查询页面统计结果得到SQL执行的情况，分析出哪些SQL语句需要优化，有利于系统性能提升。
 
-![](../assets/zh-cn/readme/image35.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image35.png)
 
-![](../assets/zh-cn/readme/image36.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image36.png)
 
 ### 业务数据汇报
 
 可对年度集群运行状况的关键数据进行汇总报告，以便了解集群运行状况。
 
-![](../assets/zh-cn/readme/image37.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image37.png)
 
 ### 历史事件与计算节点日志
 
@@ -484,13 +484,13 @@ HotDB Server支持对当前已配置的数据节点、存储节点、逻辑库�
 
 主要记录服务器时间差异、参数感知、存储节点被共用、主备数据一致性检测、一键迁库、全局表数据检测、表结构与表索引检测、配置修改导致备份失效、全局唯一约束异常等相关事件信息。不同事件信息对应不同的报警级别包括：ERROR、WARNING、INFO、UNKNOW。
 
-![](../assets/zh-cn/readme/image38.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image38.png)
 
 #### 计算节点日志
 
 主要提供计算节点运行过程中产生的日志信息。管理平台默认只获取计算节点中ERROR级别的日志信息（可自定义获取日志级别）。可通过时间范围、日志类型、日志级别、查看状态、日志内容对日志信息进行筛选。多节点模式集群可支持查看多个计算节点上的日志信息。同时支持将日志文件导出到本地保存。
 
-![](../assets/zh-cn/readme/image39.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image39.png)
 
 ### 分片合理性评分
 
@@ -518,13 +518,13 @@ HotDB Server支持对当前已配置的数据节点、存储节点、逻辑库�
 
 > 根据查询无法找到节点的次数、分片字段定义是否合理计算得分。
 
-![](../assets/zh-cn/readme/image40.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image40.png)
 
 ### 系统异常事件邮件提醒
 
 通过管理平台配置：发件箱参数、添加邮件接收人信息以及勾选系统监控内容后，可使用邮件提醒功能。目前邮件提醒的监控范围包括：计算节点与存储节点故障或切换、计算节点服务器资源状态、计算节点服务状态、存储节点相关检测、系统定时任务检测、许可证授权监控。若本地无法正常接收邮件，也可配置将报警日志内容输出到本地文本中。
 
-![](../assets/zh-cn/readme/image41.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image41.png)
 
 ### 多线程备份
 
@@ -548,31 +548,31 @@ HotDB Server提供类似Mydumper的多线程备份工具HotDB Backup
 
 - 除此之外，HotDB Backup也支持加密备份文件、计算文件MD5值、备份至远程等功能。
 
-![](../assets/zh-cn/readme/image42.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image42.png)
 
 以下是HotDB Backup与传统几款常用的备份工具对比图：
 
-![](../assets/zh-cn/readme/image43.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image43.png)
 
 ### 数据恢复
 
 HotDB Server支持数据备份后在界面发起数据恢复请求。可按照恢复时间点对备份数据进行恢复，保证数据完整性。恢复会自动根据选择的时间点带出可用于该时间点恢复的完整备份和增量备份文件。恢复过程中出现的SQL执行错误都可以在界面详细日志中查看。
 
-![](../assets/zh-cn/readme/image44.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image44.png)
 
 ### SQL防火墙与白名单
 
 用户可以设置SQL防火墙，拦截可疑的操作如："无WHERE条件的DELETE、无WHERE条件的UPDATE"等；也可以设置IP访问白名单，限定允许连接HotDB Server服务的IP地址范围。
 
-![](../assets/zh-cn/readme/image45.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image45.png)
 
-![](../assets/zh-cn/readme/image46.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image46.png)
 
 ### 一键迁库
 
 HotDB Server支持在线一键迁库功能。当存储节点所在的服务器硬件配置不足或MySQL版本需要停机升级时，可通过一键迁库功能将存储节点数据迁移至新的存储节点服务器上。一键迁库本质上是将数据节点下的存储节点更换为其余有MySQL复制关系的，拥有相同数据的，其它存储节点。
 
-![](../assets/zh-cn/readme/image47.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image47.png)
 
 ### 过载保护/限流
 
@@ -592,7 +592,7 @@ HotDB Server支持对在后端执行的各类SQL语句进行智能流控。可�
 
 管理平台支持通过界面执行部分计算节点管理端口（默认3325）中的管理命令。例如查看计算节点的前后端连接状态、当前会话连接信息、SQL运行情况、计算节点线程资源情况等。方便用户排查问题，快速解决系统故障或隐患。
 
-![](../assets/zh-cn/readme/image48.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image48.png)
 
 ### 配置参数热加载
 
@@ -616,15 +616,15 @@ HotDB Server 支持配置参数的热加载，当更新计算节点、存储节�
 
 该用户为访问计算节点服务的用户。HotDB Server的用户权限体系兼容MySQL提供全局权限、库权限、表级权限多维度配置。同时新增了表级拒绝权限，方便管理员快速隔离用户对安全级别较高的业务表进行操作。
 
-![](../assets/zh-cn/readme/image49.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image49.png)
 
 ### 高可用环境切换及重建
 
 HotDB Server支持通过管理平台对主备模式的计算节点集群进行可视化的手动高可用切换操作，也可以在计算节点发生高可用切换(手动或故障切换)之后，重建高可用环境，保证下次主计算节点发生故障时程序可正常切换。
 
-![](../assets/zh-cn/readme/image50.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image50.png)
 
-![](../assets/zh-cn/readme/image51.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image51.png)
 
 ### 安装部署
 
@@ -632,55 +632,55 @@ HotDB Server支持通过管理平台对主备模式的计算节点集群进行�
 
 集群部署功能是面向分布式事务数据库集群进行快速部署的整体解决方案，支持对单计算节点、主备计算节点、多计算节点三种集群模式的快速部署。可安装计算节点服务、配置库实例、Keepalived、LVS、NTPD、备份程序、存储节点实例等集群所需的组件。通过集群部署可快速完成整套集群所需的组件安装、组件间关系搭建、服务启动、生成组件拓扑图等工作。
 
-![](../assets/zh-cn/readme/image52.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image52.png)
 
-![](../assets/zh-cn/readme/image53.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image53.png)
 
-![](../assets/zh-cn/readme/image54.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image54.png)
 
 #### 单机部署
 
 单机部署可为已部署好的分布式事务数据库集群增加存储节点实例或其他所需组件，也可通过单机部署实现新增组件的关系搭建与服务启动。
 
-![](../assets/zh-cn/readme/image55.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image55.png)
 
-![](../assets/zh-cn/readme/image56.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image56.png)
 
 #### 在线升级
 
 支持通过管理平台对HotDB Server版本进行在线升级。满足对单节点、主备节点、多节点集群模式的跨版本或小版本升级迭代。同时为用户提供升级过程突发异常情况时的自动回滚机制，程序尽量保证将集群回滚至升级前的状态，减少对线上业务的影响。
 
-![](../assets/zh-cn/readme/image57.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image57.png)
 
 ### 部署环境体检
 
 部署环境体检是一套专门为HotDB Server集群量身打造的运行环境体检评分功能。无论是通过手动安装还是管理平台部署的集群，都可以使用该功能为集群运行环境进行评测。评测后将展示出整个集群五大维度接近140个体检细分项目的体检结果，为集群运行环境优化提供更全面的标准的参考信息。
 
-![](../assets/zh-cn/readme/image58.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image58.png)
 
 ### 信息收集
 
 HotDB Server集群组件较多，运行机制较为复杂。当出现异常问题或故障时，如果信息收集不全面，分析排查比较困难。利用信息收集工具可快速在出现问题时，搜集分析所需的日志与配置文件信息，从而提高问题排查的速度与效率。
 
-![](../assets/zh-cn/readme/image59.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image59.png)
 
 ### 许可证管理
 
 管理平台支持对计算节点许可证进行在线更新或激活操作。可对试用许可证激活为正式许可证、试用许可证更新、正式许可证更新、许可证首次激活等多种场景提供功能支持。
 
-![](../assets/zh-cn/readme/image60.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image60.png)
 
 ### 网络感知
 
 计算节点支持定时检测集群内计算节点到存储节点、配置库所在服务器间网络质量。对不符合网络质量的链路进行记录配置库以及日志，并展示在管理平台上，方便用户排查因网络问题导致的集群运行异常或故障。
 
-![](../assets/zh-cn/readme/image61.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image61.png)
 
 ### 智能巡检
 
 > 支持可视化界面定期巡检计算节点集群运行状态，及时规避线上隐患问题。
 
-![](../assets/zh-cn/readme/image62.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image62.png)
 
 ## 数据库安全控制
 
@@ -711,11 +711,11 @@ DNID是数据节点DATANODE_ID的缩写。可以在hint中使用相关语法控�
 
 HotDB Server支持Navicat、Workbench等第三方数据库管理工具。
 
-![](../assets/zh-cn/readme/image63.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image63.png)
 
 Navicat连接HotDB Server数据服务端口示意图
 
-![](../assets/zh-cn/readme/image64.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image64.png)
 
 Workbench连接HotDB Server数据服务端口示意图
 
@@ -723,15 +723,15 @@ Workbench连接HotDB Server数据服务端口示意图
 
 HotDB Server产品以及配套的管理平台支持中文与英文两种语言模式，可根据用户实际要求进行在线切换。同时为产品的使用提供全英文的产品功能手册，帮助海外用户方便使用产品。
 
-![](../assets/zh-cn/readme/image65.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image65.png)
 
 # HotDB Server部署配置
 
-![](../assets/zh-cn/readme/image66.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image66.png)
 
 集群主备模式部署架构示意图
 
-![](../assets/zh-cn/readme/image67.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image67.png)
 
 集群负载均衡模式部署架构示意图
 
@@ -857,7 +857,7 @@ HotDB Server经过多年研磨，克难攻坚，在金融行业、通讯行业�
 
 圆通速递的金刚核心系统原系统支撑能力峰值达到650万单/天就宕机，经过分布式化改造之后，自实施的第一年2013年顺利支撑峰值1350万单/天，2014年顺利支撑峰值2300万单/天，2015年顺利支撑峰值5300万单/天，2016年顺利支撑8900万单/天。将金刚系统的核心组成部分：高端小型机、高端存储设备、WAS中间件、Oracle数据库，转型改造为：X86服务器、JBOSS中间件、Redis、分布式事务数据库HotDB Server和Hadoop大数据平台组合的分布式架构，轻松地支持了业务量的快速增长。
 
-![](../assets/zh-cn/readme/image68.jpeg)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image68.jpeg)
 
 ## 中国人民银行
 
@@ -869,7 +869,7 @@ HotDB Server经过多年研磨，克难攻坚，在金融行业、通讯行业�
 
 围绕中国人民银行征信中心的MySQL数据库实施服务技术要求，从数据库分布式架构设计、数据分片设计、数据架构治理原则，及MySQL数据库的安装部署、标准初始化、操作系统定制化、开发规范、监控报警定制、配置规范、数据迁移、性能优化、参数优化、高可用设计、研发支持等多个维度，综合保障业务系统的MySQL数据库服务稳定、可靠和高效，同时建立符合征信中心特色的MySQL数据库运维管理体系。实现了对全国6个数据中心，超过8000个物理服务器，300万以上监控项的监控。突破了Zabbix监控软件的NVPS瓶颈，提升了Zabbix的数据处理效率和吞吐量。
 
-![](../assets/zh-cn/readme/image69.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image69.png)
 
 ## 银联商务
 
@@ -881,7 +881,7 @@ HotDB Server经过多年研磨，克难攻坚，在金融行业、通讯行业�
 
 银联商务引入分布式事务数据库HotDB Server后，先期从BBS系统、内部管理及办公系统、开放API系统等方面进行MySQL数据库分布式方案改造。根据银联商务系统特征，热璞科技提供了从数据库分布式架构设计、数据分片设计、数据架构治理原则，及数据库的安装部署等方案。同时HotDB Server分布式事务数据库产品提供完备的高可用解决方案，读写分离，容灾备份，监控报警等功能，帮助银联商务成功进行异构数据迁移，并帮助银联商务建立MySQL运维体系。
 
-![](../assets/zh-cn/readme/image70.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image70.png)
 
 ## 国开银行
 
@@ -893,4 +893,4 @@ HotDB Server经过多年研磨，克难攻坚，在金融行业、通讯行业�
 
 国家开发银行的学生助学贷款业务系统在开学期间经常遇到高并发高吞吐等问题。因此引入了国产自研的分布式事务数据库HotDB Server。通过多轮测试验证，HotDB Server能够保证分布式事务强一致、主备数据异常场景下强一致、备份强一致、数据服务稳定、智能化运维平台等，保障整个系统的稳定运行，支撑TB-PB级数据访问、高并发、高吞吐的业务场景，大大提升了业务系统提升服务海量用户和处理海量数据的能力。
 
-![](../assets/zh-cn/readme/image71.png)
+![](https://github.com/HotDB-Community/HotDB-Knowledge-Base/blob/main/assets/zh-cn/readme/image71.png)
