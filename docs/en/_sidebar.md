@@ -1,11 +1,11 @@
 * Start
   * [Introduce](en/README.md)
-  <!--* [New Features](new-features.md)-->
+<!--  * [New Features](new-features.md)-->
 * Install and Update
   * [Install and Deploy](install-and-deploy.md)
   * [Manual Update](manual-update.md)
-  <!--* [Cluster Environment Requirement](cluster-environment-requirement.md)-->
-  <!--* [Hardware Config Recommendation](hardware-config-recommendation.md)-->
+<!--  * [Cluster Environment Requirement](cluster-environment-requirement.md)-->
+<!--  * [Hardware Config Recommendation](hardware-config-recommendation.md)-->
 * HotDB Server
   * [Standard](standard.md)
   * [Management Port Command](management-port-command.md)
