@@ -1,4 +1,4 @@
-![logo](assets/logo_wide.png ":size=200x100")
+![logo](assets/logo_wide.png)
 
 # HotDB Server Reference Manual
 
