@@ -9,5 +9,3 @@
 [中文文档](中文手册) | [English Documents](English%20Manual)
 
 [中文参考手册](https://hotdb-community.github.io/hotDB-knowledge-base/#/) | [English Reference Manual](https://hotdb-community.github.io/hotDB-knowledge-base/#/en/)
-
-
