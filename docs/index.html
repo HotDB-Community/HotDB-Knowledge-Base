@@ -5,8 +5,17 @@
   <title>HotDB Reference Manual</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta name="keywords" content="hotpu,热璞,hotdb,热璞网络科技,数据库,云计算,数据库中间件">
+  <meta name="author" content="shicheng">
+  <meta name="description" content="上海热璞网络科技有限公司总部位于上海，在北京、南京和深圳设有分部，是一家专注基础软件分布式事务数据库产品和关系型云数据库产品的研发厂商，致力成为分布式事务数据库与私有云数据库行业的领导者，帮助企业零门槛使用分布式事务数据库和私有云数据库。">
+  <link rel="shortcut icon" type="image/ico" href="/assets/favicon.png">
   <script src="//cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <style>
+    .app-name-link img{
+      padding: 0.5em 2em 0.5em 2em;
+    }
+  </style>
 </head>
 <body>
   <div id="app"></div>
@@ -17,6 +26,7 @@
         "/": "/",
         "/en": "/en/"
       },
+      logo: "assets/logo_wide.png",
       repo: 'https://github.com/HotDB-Community/HotDB-Knowledge-Base',
       coverpage: ["/", "/en/"],
       onlyCover: true,
@@ -25,6 +35,7 @@
       mergeNavbar: true,
       subMaxLevel: 1,
       auto2top: true,
+      notFoundPage: true,
       search: {
         noData: {
           "/": "没有结果！",
