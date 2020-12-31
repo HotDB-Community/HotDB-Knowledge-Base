@@ -1,5 +1,5 @@
 * Start
-  * Introduce
+  * [Introduce](en/README.md)
 * Install and Update
   * Install and Deploy
   * Manual Update

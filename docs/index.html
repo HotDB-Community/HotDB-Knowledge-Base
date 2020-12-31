@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Github-Study</title>
+  <title>HotDB Reference Manual</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <script src="//cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
@@ -12,14 +12,18 @@
   <div id="app"></div>
   <script>
     window.$docsify = {
-      name: 'Github-Study',
-      repo: 'https://github.com/DragonKnightOfBreeze/Github-Study',
-      coverpage: ["/", "/zh-cn/"],
+      name: "HotDB Reference Manual", //不能使用对象
+      nameLink: {
+        "/": "/",
+        "/en": "/en/"
+      },
+      repo: 'https://github.com/HotDB-Community/HotDB-Knowledge-Base',
+      coverpage: ["/", "/en/"],
       onlyCover: true,
       loadSidebar: true,
       loadNavbar: true,
       mergeNavbar: true,
-      subMaxLevel: 3,
+      subMaxLevel: 1,
       auto2top: true,
       search: {
         noData: {
