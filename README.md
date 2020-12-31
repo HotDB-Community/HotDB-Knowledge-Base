@@ -4,8 +4,10 @@
 
 分布式关系型数据库HotDB Server的参考手册。
 
-[Github](https://github.com/HotDB-Community/HotDB-Knowledge-Base) | [官方网站](https://www.hotdb.com)
+[Github](https://github.com/HotDB-Community/HotDB-Knowledge-Base)
 
-[中文文档](中文手册) | [English Documents](English%20Manual)
+[官方网站](https://www.hotdb.com)
 
-[中文参考手册](https://hotdb-community.github.io/hotDB-knowledge-base/#/) | [English Reference Manual](https://hotdb-community.github.io/hotDB-knowledge-base/#/en/)
+[文档](中文手册) 
+
+[参考手册](https://hotdb-community.github.io/HotDB-Knowledge-Base/#/) 
