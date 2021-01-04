@@ -8,6 +8,6 @@ Reference Manual of HotDB Server, a distributed relational database.
 
 [Gitee](https://gitee.com/hotdb-community/HotDB-Knowledge-Base)
 
-[官方网站](https://www.hotdb.com)
+[Official Website](https://www.hotdb.com)
 
 [English Manual](English%20Manual)
