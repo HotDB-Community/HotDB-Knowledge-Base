@@ -6,8 +6,8 @@
 
 [Github](https://github.com/HotDB-Community/HotDB-Knowledge-Base)
 
+[Gitee](https://gitee.com/hotdb-community/HotDB-Knowledge-Base)
+
 [官方网站](https://www.hotdb.com)
 
-[文档](中文手册) 
-
-[参考手册](https://hotdb-community.github.io/HotDB-Knowledge-Base/#/) 
+[中文文档](中文手册) 
