@@ -1,0 +1,353 @@
+1. 我们上次分享留了一个问题哈，就是trigger的event到底怎么回放的，为什么没有主键冲突，我们今天介绍下哈。
+上次分享时，介绍了trigger trx在binlog中events的顺序
+ gtid event
+ query event
+ table_map_event(table1)
+ table_map_event(table2)
+ rows_event(table1)
+ rows_event(table2)
+ xid_event
+
+实际在slave 进行回放的时候哈，他走的就不是server层的创建连接，执行语句了。而是直接调用每个event中的do_apply_event。比如table map event，它会将表的元信息保存起来。
+到write_rows_event呢，slave 调用函数如下
+  |--do_exec_row
+    |--write_row
+      |-- handler::ha_write_row
+	    |-- write_row
+可以看到是调用了引擎层的innodb::write_row 将数据插进去。
+
+综上我们可以看到，trigger trx 在slave 回放时，实际是绕过了trigger，直接交予存储引擎操作数据。因此也不会出现我们一开始说的，主键冲突的问题。
+
+
+另外，更正一下上次分享时出现的一个错误哈。我们说 trx是由event 构成的。比如insert 语句，它包含的events 是gtid_log_event， query_log_event,
+table_map_log_event, write_rows_log_event, xid_log_event
+我们说这些events是在最后trx 提交的时候生成的，实际不是哈，他们的实际生成顺序如下
+
+Gtid event， Xid event 是在ordered_commit 函数里生成的。这个涉及到binlog 和redo log的一致性写入问题。
+
+table map event 在 binlog_write_table_map 函数中生成，它接收了参数 has trans 标志是否是事务，need_binlog_rows_query 是否要生成rows_query_log_event
+在函数binlog_write_table_nap 函数中，会调用 binlog_start_trans_and_stmt， 在该函数中生成query_log_event
+
+最后调用 write event 将所生成的event 缓存在thd 的binlog_chache 中。
+
+生成顺序: table_map_log_event, query_log_event, [rows_query_log_event]
+缓存顺序: query_log_event, [rows_query_log_event], table_map_log_event
+
+接着生成xid event，最后在ordered_commit函数中生成gtid event，
+
+statement 格式：
+没有table_map_event 和row_event 生成顺序
+
+生成顺序：query_log_event(储存语句)， query_log_event(begin)， xid event， gtid event
+
+
+binlog_write_table_map 中生成table_map_event， 使用table_map_log_event的另一个构造函数，从table对象中获取表信息，构造table_map_log_event
+接着调用 binlog_start_trans_and_stmt  生成query_log_event(query_log 中设计的regular trx 和 xa cases) 接着调用cache_data的write_event 将event 写入。
+
+
+
+
+
+现在正式开始我们今天的分享哈，总共涉及如下几个部分
+1. MySQL内存的分类，我们是按照内存使用的层次来划分的哈，大家都知道MySQL 分为Server层和引擎层。因为这两部分都有内存使用，而且是分开管理的。所以我们也是按照这个进行分类
+2. 一条sql语句的内存使用，我们以delete为例，来介绍它从发送给mysql到执行结束，mysql内存的分配，使用和释放
+3. Mem_root 介绍，Server层内存管理结构，后续会详细介绍
+4. 大sql的内存使用，这个也是为啥会有本次分享的原因哈，我们热璞是分布式数据库，我的备份工具也是对存储节点进行备份，当还原时，会将备份的数据应用到对应的存储节点。因为我们备份哈选用了
+逻辑备份的方式，为了备份效率，我们会将数据平成一个大sql，还原的时候直接执行这个大sql，已实现数据还原，比如insert into table() values(),()...等等，然后MySQL内存就爆了，这一部分呢，将会详细介绍一条sql在不同的阶段使用了哪些内存
+5. 一个很神奇的问题，free的内存并没有还给操作系统哦，但是mysql已经显式的做了free了，那free的内存到底去了哪里呢
+
+4,5 页
+我们先看第一部分，MySQL内存的分类。我们知道MySQL中内存的种类很多，sort buffer， join buffer，query_chache， table_cache， innodb_buffer_pool_size等
+同时，如前面介绍的，MySQL是分层的，分为Server层以及engine层，在Server层，MySQL使用mem_root进行管理，在engine层，就用大家熟悉的buffer pool 来进行管理了。
+如图，mem_root 如果包括init_alloc_root，alloc_root，reset_root_defaults, free_alloc这些函数，用于申请，分配，和回收内存。对内存的使用和释放最终会落到OS层的malloc和free 函数。
+
+Engine层，我们能看到，使用buffer_pool进行管理，buf_pool_init, buf_pool_free,buf_pool_alloc等等，最终还是落到OS的free和malloc上，buf_pool不是本次分享的重点哈，因此不做过多解释
+
+7页
+后面我们看下一条sql的使用，
+当你使用mysql 连接到mysql server时，在handle_connect_per_thread.cc 中当接收到connect 连接的信息会根据connect_info的信息，创建一个thd 用于一直处理该连接发过来的所有请求，其生命周期是一直到该connection 关闭，OK，此时你连上了mysql。当你执行一条语句时，thd中的mem_root开始申请内存，用于存储语句，和解析sql 产生的临时变量。这个时候能看到的就是MySQL内存使用量在持续增加。
+执行语句，这个顾名思义，server 层拿到sql 语句，经过语法分析，语义分析等等，最后交给engine层执行。这个也是需要大量内存的
+执行之后，调用free_root 释放该thd中mem_root上 保管的内存，同时保留该thd哈，用于接收该连接后面的语句
+
+---------如果此时关闭连接---------
+Mysql server 层关闭connection
+
+调用thd->release_resources 释放thd 所有资源
+ 
+删除thd
+
+8页
+一条delete 语句的执行流程如上，调用的函数分散在server 层和engine 层。因此内存的使用也分散在这两层。我们本次分享呢主要在server 层的内存使用。因此我们更多的是关注server 层使用
+
+10页
+终于到了我们要介绍的核心哈，Mem_root。MySQL Server层使用mem_root来管理内存。我们看下源码，USED_MEM的结构，包含一个指针，指向下一块儿内存，left 表示本内存块剩余的空间大小。 size 表示该块内存的总大小。used_mem是用于管理内存块的。 介绍完USED_MEM结构之后，我们来看下mem_root，它包含三个链表 free， used，pre_alloc 
+其中含义如下：
+  free 空闲链表块，当需要分配内存时，从该链表读取一块内存，然后划分使用
+  used 已使用的内存链表，但是里面内存也不是都占满的哦，会有一些空闲还未使用的区域
+  pre_alloc 预先分配的内存，初始化分配，只分配一块，并将其同时加入到free 链表上
+ 
+剩下的有如下变量：
+  min_malloc 最小剩余内存阈值，当从一块内存中分配了内存，剩余的内存大小小于该阈值，就有可能会被放入到used 链表，不在被分配了，这个后面会详细介绍
+  block_size 初始化内存大小，以后想OS要内存时，都是要block_size的整数倍
+  block_num  分配内存的次数，这个值是动态变得哦，每分配一次内幕才能，该值+1
+  first_block_usage free 链表第一块内存被使用的次数
+
+
+10,11 页
+我们看下初始化函数
+
+
+void init_alloc_root(PSI_memory_key key,
+                     MEM_ROOT *mem_root, size_t block_size,
+		     size_t pre_alloc_size MY_ATTRIBUTE((unused)))
+{
+  DBUG_ENTER("init_alloc_root");
+  DBUG_PRINT("enter",("root: 0x%lx", (long) mem_root));
+
+  mem_root->free= mem_root->used= mem_root->pre_alloc= 0;  //清空所有内存链表
+  mem_root->min_malloc= 32;   //设置最小剩余内存阈值为32
+  mem_root->block_size= block_size - ALLOC_ROOT_MIN_BLOCK_SIZE;  //设置分配内存时分配最小单位，8192 - 32
+  mem_root->error_handler= 0;        //错误处理函数
+  mem_root->block_num= 4;			/* We shift this with >>2 */ //初始的分配次数个数
+  mem_root->first_block_usage= 0;   // 
+  mem_root->m_psi_key= key;         //内存类型编号，用于性能计数器使用
+  mem_root->max_capacity= 0;	//mem_root最大可分配的内存数量
+  mem_root->allocated_size= 0;  //当前已分配的内存大小
+  mem_root->error_for_capacity_exceeded= FALSE;  //是否分超了
+
+#if defined(PREALLOCATE_MEMORY_CHUNKS)
+  if (pre_alloc_size) // 如果定义了预分配的大小，则进行预分配
+  {
+    if ((mem_root->free= mem_root->pre_alloc=
+	 (USED_MEM*) my_malloc(key,
+                               pre_alloc_size+ ALIGN_SIZE(sizeof(USED_MEM)),
+			       MYF(0))))   //申请预分配内存,同时将分配好的内存加入到free链表
+    {
+      mem_root->free->size= (uint)(pre_alloc_size+ALIGN_SIZE(sizeof(USED_MEM))); //设置大小
+      mem_root->free->left= (uint)pre_alloc_size;   //设置内存剩余大小
+      mem_root->free->next= 0;  //置尾指针为空
+      mem_root->allocated_size+= pre_alloc_size+ ALIGN_SIZE(sizeof(USED_MEM));  //更新已分配内存大小
+    }
+  }
+#endif
+  DBUG_VOID_RETURN;
+}
+
+以上是mem_root的初始化操作
+
+
+// 分配内存
+void *alloc_root(MEM_ROOT *mem_root, size_t length)
+{
+#if !defined(PREALLOCATE_MEMORY_CHUNKS)
+  USED_MEM *next;
+  DBUG_ENTER("alloc_root");
+  DBUG_PRINT("enter",("root: 0x%lx", (long) mem_root));
+
+  DBUG_ASSERT(alloc_root_inited(mem_root));
+
+  DBUG_EXECUTE_IF("simulate_out_of_memory",
+                  {
+                    if (mem_root->error_handler)
+                      (*mem_root->error_handler)();
+                    DBUG_SET("-d,simulate_out_of_memory");
+                    DBUG_RETURN((void*) 0); /* purecov: inspected */
+                  });
+
+  length+=ALIGN_SIZE(sizeof(USED_MEM));
+  if (!is_mem_available(mem_root, length))
+  {
+    if (mem_root->error_for_capacity_exceeded)
+      my_error(EE_CAPACITY_EXCEEDED, MYF(0),
+               (ulonglong) mem_root->max_capacity);
+    else
+      DBUG_RETURN(NULL);
+  }
+  if (!(next = (USED_MEM*) my_malloc(mem_root->m_psi_key,
+                                     length,MYF(MY_WME | ME_FATALERROR))))
+  {
+    if (mem_root->error_handler)
+      (*mem_root->error_handler)();
+    DBUG_RETURN((uchar*) 0);			/* purecov: inspected */
+  }
+  mem_root->allocated_size+= length;
+  next->next= mem_root->used;
+  next->size= (uint)length;
+  next->left= (uint)(length - ALIGN_SIZE(sizeof(USED_MEM)));
+  mem_root->used= next;
+  DBUG_PRINT("exit",("ptr: 0x%lx", (long) (((char*) next)+
+                                           ALIGN_SIZE(sizeof(USED_MEM)))));
+  DBUG_RETURN((uchar*) (((char*) next)+ALIGN_SIZE(sizeof(USED_MEM))));
+#else
+// 这个影响我们看源码，删掉，我们直接看下面的代码
+	
+  size_t get_size, block_size;
+  uchar* point;
+  USED_MEM *next= 0;
+  USED_MEM **prev;
+  DBUG_ENTER("alloc_root");
+  DBUG_PRINT("enter",("root: 0x%lx", (long) mem_root));
+  DBUG_ASSERT(alloc_root_inited(mem_root));
+
+  DBUG_EXECUTE_IF("simulate_out_of_memory",
+                  {
+                    /* Avoid reusing an already allocated block */
+                    if (mem_root->error_handler)
+                      (*mem_root->error_handler)();
+                    DBUG_SET("-d,simulate_out_of_memory");
+                    DBUG_RETURN((void*) 0); /* purecov: inspected */
+                  });
+  length= ALIGN_SIZE(length);//double 对齐
+  if ((*(prev= &mem_root->free)) != NULL)   //free 非空
+  {
+    if ((*prev)->left < length && // 剩余大小小于要分配的大小
+	mem_root->first_block_usage++ >= ALLOC_MAX_BLOCK_USAGE_BEFORE_DROP &&  //分配的次数大于等于10次
+	(*prev)->left < ALLOC_MAX_BLOCK_TO_DROP)  //剩余大小小于4096
+    {
+      next= *prev;
+      *prev= next->next;			/* Remove block from list */ //挂到used 链表上
+      next->next= mem_root->used;
+      mem_root->used= next;
+      mem_root->first_block_usage= 0;
+    }
+    for (next= *prev ; next && next->left < length ; next= next->next)   //循环继续寻找合适的内存块
+      prev= &next->next;
+  }
+  if (! next)   //没有分配出来
+  {						/* Time to alloc new block */
+    block_size= mem_root->block_size * (mem_root->block_num >> 2);   //大家看到mem_root->block_size 和block_num 没，block_num除以4 在程序block_size，等于要分配的block_size的大小
+    get_size= length+ALIGN_SIZE(sizeof(USED_MEM));  //get_size 等于length 加上头长度
+    get_size= MY_MAX(get_size, block_size);   //两个里面取最大值
+
+    if (!is_mem_available(mem_root, get_size)) 
+    {
+      if (mem_root->error_for_capacity_exceeded)
+        my_error(EE_CAPACITY_EXCEEDED, MYF(0),
+                 (ulonglong) mem_root->max_capacity);
+      else
+        DBUG_RETURN(NULL);
+    }
+    if (!(next = (USED_MEM*) my_malloc(mem_root->m_psi_key,
+                                       get_size,MYF(MY_WME | ME_FATALERROR)))) //调用my_malloc 分配新内存
+    {
+      if (mem_root->error_handler)
+	(*mem_root->error_handler)();
+      DBUG_RETURN((void*) 0);                      /* purecov: inspected */
+    }
+    mem_root->allocated_size+= get_size;  //更新mem_root->allocated_size
+    mem_root->block_num++;  //分配次数计数++
+    next->next= *prev; 
+    next->size= (uint)get_size;
+    next->left= (uint)(get_size-ALIGN_SIZE(sizeof(USED_MEM)));
+    *prev=next;
+  }
+
+  point= (uchar*) ((char*) next+ (next->size-next->left)); //返回可用的内存地址
+  /*TODO: next part may be unneded due to mem_root->first_block_usage counter*/
+  if ((next->left-= (uint)length) < mem_root->min_malloc)   //如果剩余内存小于最小内存阈值，将其挂载到
+  {						/* Full block */
+    *prev= next->next;				/* Remove block from list */ 
+    next->next= mem_root->used;                                  //挂载到used 链表
+    mem_root->used= next;
+    mem_root->first_block_usage= 0;
+  }
+  DBUG_PRINT("exit",("ptr: 0x%lx", (ulong) point));
+  DBUG_RETURN((void*) point);
+#endif
+}
+
+// 释放内存
+void free_root(MEM_ROOT *root, myf MyFlags)
+{
+  USED_MEM *next,*old;
+  DBUG_ENTER("free_root");
+  DBUG_PRINT("enter",("root: 0x%lx  flags: %u", (long) root, (uint) MyFlags));
+
+  if (MyFlags & MY_MARK_BLOCKS_FREE)   //如果是MARK_BLOCKS_FREE
+  {
+    mark_blocks_free(root);   //将所有的内存块，初始化一下，并全部挂到free 链表中
+    DBUG_VOID_RETURN;
+  }
+  if (!(MyFlags & MY_KEEP_PREALLOC))  //如果不需要keep prealloc， 直接释放pre_alloc，我们介绍过哈，init的时候，会将pre_alloc的内存块挂载到free链表上，所以这里直接
+    root->pre_alloc=0;                //将pre_alloc 置空，不影响后续的释放 
+
+/*  释放used 链表的内存块 */
+  for (next=root->used; next ;)
+  {
+    old=next; next= next->next ;
+    if (old != root->pre_alloc)
+    {
+      old->left= old->size;
+      TRASH_MEM(old);
+      my_free(old);
+    }
+  }
+  /* 释放free链表的内存块 */
+  for (next=root->free ; next ;)
+  {
+    old=next; next= next->next;
+    if (old != root->pre_alloc)
+    {
+      old->left= old->size;
+      TRASH_MEM(old);
+      my_free(old);
+    }
+  }
+  /* 将free链表和used 链表置空 */
+  root->used=root->free=0;
+  
+  if (root->pre_alloc)   // 是否保留pre_alloc，如果保留了，则将pre_alloc的内存块挂到 free链表上
+  {
+    root->free=root->pre_alloc;
+    root->free->left=root->pre_alloc->size-(uint)ALIGN_SIZE(sizeof(USED_MEM));
+    root->allocated_size= root->pre_alloc->size;
+    TRASH_MEM(root->pre_alloc);
+    root->free->next=0;
+  }
+  else
+    root->allocated_size= 0;  
+  root->block_num= 4;  //更新mem_root的计数信息
+  root->first_block_usage= 0;
+  DBUG_VOID_RETURN;
+}
+
+至此Mem_root的管理：初始化，分配内存，释放内存，就都介绍完了。
+
+14页
+下面我们看下大sql 对MySQL的影响，图1可以看到启动时，内存的使用量只有400多M，当我们执行一条150M的内存之后，我们发现内存的使用量已经飙升到约4.2 GB了。
+15页
+这个我们通过mysql的performance_schema也能看出来，比如启动时，我们能看到内幕才能的使用量，main_mem_root 还有151KB，NET::buff 0 KB，当我们执行大sql的时候，我们再查一下性能计数器，
+会发现，内存的使用量已经飚上去了，main_mem_root 4.15 GB，NET::buf 也到了150MB。
+
+16页
+这个时候我们就比较疑惑了，内存到底消耗在哪儿了呢。当时我们的恢复程序在执行时，是执行的bulk insert，我们查表中的数据，发现我们的查询语句并没有被阻塞，所以我们怀疑这条大sql根本没有到
+engine层，所有的内存消耗都在MySQL Server层。为此，我们用脚本生成了一条150M的delete语句，该delete语句操作的表不存在，因此他对innodb的数据页修改是0，所以可以帮助我们确认是不是server层
+的内存使用过高导致被OOM。
+我们把server层程序的执行堆栈打出来，我们来确定到底在那个函数导致内存使用量上去的
+
+17页
+通过昨天的图，我们可以看到，
+在MYSQLparse之前，allocated_size = 315563856 在MYSQLparse 之后，我们可以看到allocated_size= 370903056新增的allocated_size为3393499200，当前的allocated_size 加上MySQL刚启动时 461500 K内存，约等于目前的内存使用量4277196 KB。
+
+至此我们可以确定，还原时内存增大是因为bulk insert的sql太大，MYSQLpase 生成语法树的时候消耗了过多的内存因为OOM被OS kill 掉
+
+由上可知，线上的生产环境，最好不要有太大的sql，一条150M的sql，可能会导致MySQL 额外消耗三四个GB的内存来运行，这还不包括buffer pool的内存消耗
+
+19页
+出了上面内存消耗过多的问题，我们在跟源码的时候，也发现另外一个问题，就是MySQL 调用free_root 释放了内存，如右图执行free_root之前，main_mem_root显示申请了3709063056 bytes内存，free_root之后，只有8208bytes的内存了，按理说，MySQL 的使用内存应该从4个多G降低到400多M才对，实际呢，并没有。
+
+20页
+我们看下这两个图，free_root之前，MySQL占用了 4.2 GB内存，free_root执行之后呢，MySQL还占了3.2 GB，但是我们通过上一页能够算出来，mem_root 实际释放了(3709063056 – 8208)bytes的内存。
+但是实际OS认为只释放了(4239588-3207996) KB的内存。这中间出现差错的内存到底去了哪里了呢。这里不得不提Linux中内存申请和释放的malloc和free了。malloc和free用来向系统申请和释放内存的。但是free的内存是否就立即返回给系统呢？这个从我们测试的结果来看就不确定了。这个问题留给大家研究，我们下次在详细分享。提示一下，这个涉及到glibc中内存分配器ptmalloc 管理算法。
+我们后续给的资料里面会详细介绍这个问题。
+
+
+
+
+
+
+
+
+
+
+
